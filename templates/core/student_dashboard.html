@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard - CareerConnect{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-welcome {
+        background: linear-gradient(135deg, #0061f2 0%, #00c6f2 100%);
+        color: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(0, 0, 0, 0.1);
+    }
+    
+    .dashboard-welcome h1 {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .dashboard-welcome p {
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+    
+    .stats-card {
+        border: none;
+        border-radius: 1rem;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease-in-out;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .stats-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .stats-card .card-title {
+        color: #4a5568;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 1rem;
+    }
+    
+    .stats-card .display-4 {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0;
+    }
+    
+    .application-card {
+        border: none;
+        border-radius: 1rem;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(0, 0, 0, 0.1);
+        height: 100%;
+    }
+    
+    .application-card .card-header {
+        background-color: transparent;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1.25rem 1.5rem;
+    }
+    
+    .application-card .card-header h5 {
+        color: #2d3748;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    .application-card .list-group-item {
+        border: none;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .application-card .list-group-item:hover {
+        background-color: #f8fafc;
+        transform: translateX(5px);
+    }
+    
+    .application-card .list-group-item h6 {
+        color: #2d3748;
+        font-weight: 600;
+    }
+    
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .status-accepted {
+        background-color: #def7ec;
+        color: #03543f;
+    }
+    
+    .status-pending {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+    
+    .status-rejected {
+        background-color: #fee2e2;
+        color: #981b1b;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Welcome Section -->
+    <div class="dashboard-welcome">
+        <h1 class="display-5">Welcome, {{ user.get_full_name|default:user.username }}!</h1>
+        <p class="lead">Manage your job applications and career progress</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card stats-card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Total Applications</h5>
+                    <p class="display-4">{{ total_applications }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stats-card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Pending Review</h5>
+                    <p class="display-4">{{ pending_applications }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stats-card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Interview Stage</h5>
+                    <p class="display-4">{{ interview_applications }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stats-card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Accepted</h5>
+                    <p class="display-4">{{ accepted_applications }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Applications and Recommended Jobs -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card application-card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Applications</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_applications %}
+                        <div class="list-group list-group-flush">
+                        {% for application in recent_applications %}
+                            <a href="{% url 'jobs:detail' application.job.id %}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ application.job.title }}</h6>
+                                        <p class="mb-1 text-muted">{{ application.job.company }}</p>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="status-badge {% if application.status == 'accepted' %}status-accepted{% elif application.status == 'rejected' %}status-rejected{% else %}status-pending{% endif %}">
+                                            {{ application.status|title }}
+                                        </span>
+                                        <div><small class="text-muted">{{ application.applied_at|timesince }} ago</small></div>
+                                    </div>
+                                </div>
+                            </a>
+                        {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-inbox h1 d-block mb-3"></i>
+                            <p class="mb-0">No applications yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card application-card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recommended Jobs</h5>
+                </div>
+                <div class="card-body">
+                    {% if recommended_jobs %}
+                        <div class="list-group list-group-flush">
+                        {% for job in recommended_jobs %}
+                            <a href="{% url 'jobs:job_detail' job.id %}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ job.title }}</h6>
+                                        <p class="mb-1 text-muted">{{ job.company }}</p>
+                                        <small class="text-muted">{{ job.location }}</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <small class="text-muted">{{ job.created_at|timesince }} ago</small>
+                                    </div>
+                                </div>
+                            </a>
+                        {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-briefcase h1 d-block mb-3"></i>
+                            <p class="mb-0">No recommended jobs at the moment</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

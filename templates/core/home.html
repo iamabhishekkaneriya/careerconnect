@@ -1,0 +1,428 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}CareerConnect - College Placement Portal{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section py-5 mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">IPS College Placement Portal</h1>
+                <p class="lead mb-4">Access exclusive job opportunities, connect with top employers, and launch your career through your college's official placement platform.</p>
+                <div class="d-flex gap-3">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'jobs:job_list' %}" class="btn btn-primary btn-lg">Browse Jobs</a>
+                    <a href="{% url 'core:dashboard' %}" class="btn btn-outline-primary btn-lg">Go to Dashboard</a>
+                    {% else %}
+                    <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg">Student Login</a>
+                    <div class="d-flex align-items-center ms-3">
+                        <i class="bi bi-info-circle text-primary me-2"></i>
+                        <small class="text-muted">Use your college-provided credentials to login</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Section -->
+<div class="container mb-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm text-center h-100 hover-card">
+                <div class="card-body p-4">
+                    <div class="display-6 text-primary mb-3">
+                        <i class="bi bi-briefcase"></i>
+                    </div>
+                    <h3 class="h2 mb-3">{{ total_jobs }}</h3>
+                    <p class="text-muted mb-0">Active Job Listings</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm text-center h-100 hover-card">
+                <div class="card-body p-4">
+                    <div class="display-6 text-success mb-3">
+                        <i class="bi bi-person-check"></i>
+                    </div>
+                    <h3 class="h2 mb-3">{{ total_placements }}</h3>
+                    <p class="text-muted mb-0">Successful Placements</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm text-center h-100 hover-card">
+                <div class="card-body p-4">
+                    <div class="display-6 text-info mb-3">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <h3 class="h2 mb-3">50+</h3>
+                    <p class="text-muted mb-0">Partner Companies</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container mb-5">
+    <h2 class="text-center mb-5">Why Choose CareerConnect?</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100 hover-card">
+                <div class="card-body p-4">
+                    <div class="feature-icon bg-primary bg-opacity-10 text-primary p-3 rounded-circle mb-3">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Smart Job Matching</h3>
+                    <p class="text-muted mb-0">Our AI-powered system matches your skills and preferences with the perfect job opportunities.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100 hover-card">
+                <div class="card-body p-4">
+                    <div class="feature-icon bg-success bg-opacity-10 text-success p-3 rounded-circle mb-3">
+                        <i class="bi bi-ladder"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Career Growth</h3>
+                    <p class="text-muted mb-0">Access resources, mentorship, and opportunities to accelerate your professional development.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100 hover-card">
+                <div class="card-body p-4">
+                    <div class="feature-icon bg-info bg-opacity-10 text-info p-3 rounded-circle mb-3">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h3 class="h5 mb-3">Verified Opportunities</h3>
+                    <p class="text-muted mb-0">All job listings are verified and come from trusted partner companies.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Latest Jobs Section -->
+{% if recent_jobs %}
+<div class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Latest Opportunities</h2>
+        <a href="{% url 'jobs:job_list' %}" class="btn btn-outline-primary">View All Jobs</a>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for job in recent_jobs %}
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        {% if job.company_logo %}
+                        <img src="{{ job.company_logo.url }}" alt="{{ job.company }}" class="company-logo me-3">
+                        {% else %}
+                        <div class="company-logo-placeholder me-3">
+                            {{ job.company|make_list|first|upper }}
+                        </div>
+                        {% endif %}
+                        <div>
+                            <h5 class="card-title mb-1">{{ job.title }}</h5>
+                            <h6 class="card-subtitle text-muted">{{ job.company }}</h6>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <span class="badge bg-primary">{{ job.get_job_type_display }}</span>
+                        {% if job.salary_range %}
+                        <span class="badge bg-success">{{ job.salary_range }}</span>
+                        {% endif %}
+                    </div>
+                    <p class="card-text text-muted small mb-3">
+                        <i class="bi bi-geo-alt me-1"></i>{{ job.location }}
+                        <br>
+                        <i class="bi bi-clock me-1"></i>Posted {{ job.created_at|timesince }} ago
+                    </p>
+                    <a href="{% url 'jobs:job_detail' job.id %}" class="btn btn-outline-primary btn-sm">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Call to Action -->
+<div class="bg-light py-5">
+    <div class="container text-center">
+        <h2 class="mb-4">Access Your Placement Portal</h2>
+        <p class="lead text-muted mb-4">Log in with your college credentials to explore opportunities and start your professional journey.</p>
+        {% if user.is_authenticated %}
+        <a href="{% url 'jobs:job_list' %}" class="btn btn-primary btn-lg">Explore Opportunities</a>
+        {% else %}
+        <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg">Student Login</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Modern Hero Section */
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("{% static 'images/College View of IPS College of Technology and Management Gwalior_Campus-View.jpg' %}") 
+                no-repeat center center / cover;
+    opacity: 0.3; /* Increase for better visibility (adjust as needed) */
+    filter: brightness(0.7) contrast(1.1); /* Enhances clarity */
+    z-index: 0
+}
+
+.hero-section {
+    position: relative;
+    background: linear-gradient(135deg, #f0f7ff 0%, #e6f0ff 100%);
+    overflow: hidden;
+}
+
+.hero-section .container {
+    position: relative;
+    z-index: 1; /* Ensures content appears above the background */
+}
+
+/* Enhanced Cards */
+.hover-card {
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hover-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1)!important;
+    border-color: rgba(13, 110, 253, 0.1);
+}
+
+.hover-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(13, 110, 253, 0.1), rgba(13, 110, 253, 0));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+.hover-card:hover::after {
+    opacity: 1;
+}
+
+/* Statistics Cards */
+.display-6 i {
+    transition: transform 0.3s ease;
+}
+
+.hover-card:hover .display-6 i {
+    transform: scale(1.1) translateY(-5px);
+}
+
+/* Company Logo */
+.company-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.company-logo-placeholder {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #0d6efd;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(13, 110, 253, 0.1);
+}
+
+.hover-card:hover .company-logo,
+.hover-card:hover .company-logo-placeholder {
+    transform: scale(1.05);
+}
+
+/* Feature Icons */
+.feature-icon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.feature-icon::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.1;
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+}
+
+.hover-card:hover .feature-icon::after {
+    transform: scale(1.2);
+}
+
+.feature-icon i {
+    font-size: 1.75rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* Badges */
+.badge {
+    padding: 0.5em 1em;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.badge.bg-primary {
+    background: linear-gradient(45deg, #0d6efd, #0a58ca)!important;
+}
+
+.badge.bg-success {
+    background: linear-gradient(45deg, #198754, #146c43)!important;
+}
+
+/* Buttons */
+.btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120%;
+    height: 120%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%) scale(0);
+    border-radius: 50%;
+    opacity: 0;
+    transition: transform 0.5s ease, opacity 0.3s ease;
+}
+
+.btn:hover::after {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #0d6efd, #0a58ca);
+    border: none;
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.2);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.3);
+}
+
+.btn-outline-primary {
+    border-width: 2px;
+}
+
+.btn-outline-primary:hover {
+    background: linear-gradient(45deg, #0d6efd, #0a58ca);
+    border-color: transparent;
+}
+
+/* Call to Action Section */
+.bg-light {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)!important;
+    position: relative;
+    overflow: hidden;
+}
+
+.bg-light::before,
+.bg-light::after {
+    content: '';
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(13, 110, 253, 0.05) 0%, rgba(13, 110, 253, 0) 70%);
+}
+
+.bg-light::before {
+    top: -100px;
+    left: -100px;
+}
+
+.bg-light::after {
+    bottom: -100px;
+    right: -100px;
+}
+
+/* Text Styles */
+h1, h2, h3, .btn {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.text-gradient {
+    background: linear-gradient(45deg, #0d6efd, #0a58ca);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Animations */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.hero-section img {
+    animation: float 6s ease-in-out infinite;
+}
+
+/* Responsive Improvements */
+@media (max-width: 768px) {
+    .hero-section {
+        text-align: center;
+    }
+    
+    .hero-section .d-flex {
+        justify-content: center;
+    }
+    
+    .feature-icon {
+        margin: 0 auto;
+    }
+}
+</style>
+{% endblock %} 

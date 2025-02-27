@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Profile - CareerConnect{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4">Edit Your Profile</h2>
+                    
+                    <!-- Current Profile Photo -->
+                    <div class="text-center mb-4">
+                        {% if user.profile_photo %}
+                            <img src="{{ user.profile_photo.url }}" alt="Current Profile Photo" 
+                                 class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;"
+                                 id="profile-photo-preview">
+                        {% else %}
+                            <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center mb-3"
+                                 style="width: 150px; height: 150px;" id="profile-photo-placeholder">
+                                <span class="text-white" style="font-size: 48px;">
+                                    {{ user.get_full_name|default:user.username|make_list|first|upper }}
+                                </span>
+                            </div>
+                            <img src="" alt="Profile Photo Preview" 
+                                 class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover; display: none;"
+                                 id="profile-photo-preview">
+                        {% endif %}
+                    </div>
+                    
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Personal Information -->
+                        <div class="mb-4">
+                            <h4 class="mb-3">Personal Information</h4>
+                            {{ user_form|crispy }}
+                        </div>
+
+                        <!-- Additional Profile Information -->
+                        <div class="mb-4">
+                            <h4 class="mb-3">Additional Information</h4>
+                            {{ profile_form|crispy }}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+
+                    <div class="mt-4">
+                        <div class="alert alert-info" role="alert">
+                            <h5 class="alert-heading">Profile Tips:</h5>
+                            <ul class="mb-0">
+                                <li>Upload a professional profile photo</li>
+                                <li>Keep your information up to date</li>
+                                <li>Upload a professional resume in PDF format</li>
+                                <li>List your skills clearly</li>
+                                <li>Include relevant certifications and achievements</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Profile photo preview
+        const photoInput = document.querySelector('input[name="profile_photo"]');
+        const photoPreview = document.getElementById('profile-photo-preview');
+        const photoPlaceholder = document.getElementById('profile-photo-placeholder');
+
+        if (photoInput) {
+            photoInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        photoPreview.src = e.target.result;
+                        photoPreview.style.display = 'inline-block';
+                        if (photoPlaceholder) {
+                            photoPlaceholder.style.display = 'none';
+                        }
+                    }
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        }
+
+        // Resume file name preview
+        const resumeInput = document.querySelector('input[name="resume"]');
+        if (resumeInput) {
+            resumeInput.addEventListener('change', function(e) {
+                const fileName = e.target.files[0]?.name;
+                const label = this.nextElementSibling;
+                if (label) {
+                    label.textContent = fileName || 'Choose file';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %} 

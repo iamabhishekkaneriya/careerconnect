@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}My Profile - CareerConnect{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Profile Overview -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <img src="{{ user.profile.avatar.url|default:'static/images/default-avatar.png' }}" 
+                         alt="Profile Picture" 
+                         class="rounded-circle mb-3"
+                         style="width: 150px; height: 150px; object-fit: cover;">
+                    <h4 class="card-title">{{ user.get_full_name|default:user.username }}</h4>
+                    <p class="text-muted">Student</p>
+                    
+                    <!-- Profile Completion -->
+                    <div class="mb-3">
+                        <small class="text-muted">Profile Completion</small>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: {{ profile_completion }}%;"
+                                 aria-valuenow="{{ profile_completion }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    
+                    <a href="{% url 'accounts:profile_edit' %}" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i>Edit Profile
+                    </a>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">Contact Information</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-envelope me-2 text-primary"></i>{{ user.email }}
+                        </li>
+                        {% if user.profile.phone %}
+                        <li class="mb-2">
+                            <i class="fas fa-phone me-2 text-primary"></i>{{ user.profile.phone }}
+                        </li>
+                        {% endif %}
+                        {% if user.profile.location %}
+                        <li class="mb-2">
+                            <i class="fas fa-map-marker-alt me-2 text-primary"></i>{{ user.profile.location }}
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Details -->
+        <div class="col-md-8">
+            <!-- Education & Skills -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Education & Skills</h5>
+                        <a href="{% url 'accounts:profile_edit' %}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </div>
+
+                    <!-- Education -->
+                    <h6 class="text-muted mb-3">Education</h6>
+                    {% if user.profile.education %}
+                        {{ user.profile.education|linebreaks }}
+                    {% else %}
+                        <p class="text-muted">No education details added yet.</p>
+                    {% endif %}
+
+                    <!-- Skills -->
+                    <h6 class="text-muted mb-3 mt-4">Skills</h6>
+                    {% if user.profile.skills.all %}
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for skill in user.profile.skills.all %}
+                                <span class="badge bg-primary">{{ skill.name }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No skills added yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Resume -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Resume</h5>
+                        <form method="post" enctype="multipart/form-data" action="{% url 'accounts:resume_upload' %}">
+                            {% csrf_token %}
+                            <input type="file" name="resume" id="resume" class="d-none" accept=".pdf,.doc,.docx">
+                            <label for="resume" class="btn btn-sm btn-outline-primary mb-0">
+                                <i class="fas fa-upload me-2"></i>Upload New
+                            </label>
+                        </form>
+                    </div>
+                    
+                    {% if user.profile.resume %}
+                        <div class="mt-3">
+                            <a href="{{ user.profile.resume.url }}" class="btn btn-outline-secondary" target="_blank">
+                                <i class="fas fa-file-pdf me-2"></i>View Current Resume
+                            </a>
+                            <small class="text-muted ms-3">
+                                Uploaded on {{ user.profile.resume_updated_at|date:"M d, Y" }}
+                            </small>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mt-3">No resume uploaded yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recent Applications -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Recent Applications</h5>
+                    {% if applications %}
+                        <div class="list-group">
+                            {% for application in applications %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">{{ application.job.title }}</h6>
+                                            <p class="mb-1 text-muted">{{ application.job.company.profile.company_name }}</p>
+                                            <small class="text-muted">Applied {{ application.applied_at|timesince }} ago</small>
+                                        </div>
+                                        <span class="badge bg-{{ application.get_status_color }}">
+                                            {{ application.get_status_display }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No applications submitted yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Handle resume upload
+    document.getElementById('resume').addEventListener('change', function() {
+        if (this.files.length > 0) {
+            this.closest('form').submit();
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %} 

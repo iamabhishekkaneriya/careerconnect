@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - CareerConnect{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto text-center mb-5">
+            <h1 class="display-4 mb-4">About CareerConnect</h1>
+            <p class="lead text-muted">Bridging the gap between talent and opportunity</p>
+        </div>
+    </div>
+
+    <!-- Mission Section -->
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <img src="{% static 'images/about-mission.jpg' %}" alt="Our Mission" class="img-fluid rounded shadow">
+        </div>
+        <div class="col-md-6">
+            <h2 class="mb-4">Our Mission</h2>
+            <p class="lead">To create a seamless connection between talented individuals and promising career opportunities.</p>
+            <p>At CareerConnect, we believe that everyone deserves the chance to find their dream job. Our platform is designed to make the job search process more efficient, transparent, and successful for both job seekers and employers.</p>
+        </div>
+    </div>
+
+    <!-- Values Section -->
+    <div class="row mb-5">
+        <div class="col-12 text-center mb-4">
+            <h2>Our Core Values</h2>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-handshake fa-3x text-primary mb-3"></i>
+                    <h4>Trust</h4>
+                    <p>Building lasting relationships through transparency and integrity.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-lightbulb fa-3x text-primary mb-3"></i>
+                    <h4>Innovation</h4>
+                    <p>Continuously improving our platform to better serve our community.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                    <h4>Community</h4>
+                    <p>Fostering a supportive environment for career growth.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Section -->
+    <div class="row mb-5">
+        <div class="col-12 text-center mb-4">
+            <h2>Our Team</h2>
+            <p class="text-muted">Meet the people behind CareerConnect</p>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm">
+                <img src="{% static 'images/team-1.jpg' %}" class="card-img-top" alt="Team Member">
+                <div class="card-body text-center">
+                    <h5 class="card-title">John Doe</h5>
+                    <p class="card-text text-muted">Founder & CEO</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm">
+                <img src="{% static 'images/team-2.jpg' %}" class="card-img-top" alt="Team Member">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Jane Smith</h5>
+                    <p class="card-text text-muted">Head of Operations</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm">
+                <img src="{% static 'images/team-3.jpg' %}" class="card-img-top" alt="Team Member">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Mike Johnson</h5>
+                    <p class="card-text text-muted">Technical Lead</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="row">
+        <div class="col-12 text-center">
+            <h2 class="mb-4">Ready to Start Your Journey?</h2>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{% url 'accounts:student_register' %}" class="btn btn-primary btn-lg">Join as Student</a>
+                <a href="{% url 'accounts:employer_register' %}" class="btn btn-outline-primary btn-lg">Join as Employer</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

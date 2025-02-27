@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Application Details - CareerConnect{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+<li class="breadcrumb-item"><a href="{% url 'jobs:my_applications' %}">My Applications</a></li>
+
+            <li class="breadcrumb-item active">{{ application.job.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Application Status Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0">Application Status</h4>
+                        <span class="badge bg-{{ application.get_status_color }} fs-6">
+                            {{ application.get_status_display }}
+                        </span>
+                    </div>
+
+                    <!-- Status Timeline -->
+                    <div class="application-timeline">
+                        <div class="timeline-item {% if application.status == 'pending' or application.status == 'shortlisted' or application.status == 'interview' or application.status == 'accepted' %}active{% endif %}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6>Application Submitted</h6>
+                                <p class="text-muted small">{{ application.created_at|date:"M d, Y" }}</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item {% if application.status == 'shortlisted' or application.status == 'interview' or application.status == 'accepted' %}active{% endif %}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6>Under Review</h6>
+                                {% if application.status == 'pending' %}
+                                    <p class="text-muted small">In Progress</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="timeline-item {% if application.status == 'interview' or application.status == 'accepted' %}active{% endif %}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6>Interview Stage</h6>
+                                {% if application.status == 'interview' %}
+                                    <p class="text-muted small">Current Stage</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="timeline-item {% if application.status == 'accepted' %}active{% endif %}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6>Final Decision</h6>
+                                {% if application.status == 'accepted' %}
+                                    <p class="text-success small">Accepted</p>
+                                {% elif application.status == 'rejected' %}
+                                    <p class="text-danger small">Not Selected</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cover Letter -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Your Cover Letter</h5>
+                    <p class="card-text">{{ application.cover_letter|linebreaks }}</p>
+                </div>
+            </div>
+
+            <!-- Attached Resume -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Attached Resume</h5>
+                    {% if user.resume %}
+                        <a href="{{ user.resume.url }}" class="btn btn-outline-primary" target="_blank">
+                            <i class="fas fa-file-pdf me-2"></i>View Resume
+                        </a>
+                    {% else %}
+                        <p class="text-muted mb-0">No resume attached</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Job Details -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Job Details</h5>
+                    <h6>{{ application.job.title }}</h6>
+                    <p class="text-muted mb-3">
+                        <i class="fas fa-map-marker-alt me-2"></i>{{ application.job.location }}
+                        <br>
+                        <i class="fas fa-briefcase me-2"></i>{{ application.job.get_job_type_display }}
+                    </p>
+                    <a href="{% url 'jobs:job_detail' application.job.id %}" class="btn btn-outline-primary w-100">
+                        View Job Details
+                    </a>
+                </div>
+            </div>
+
+            <!-- Application Info -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Application Info</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <i class="fas fa-calendar text-primary me-2"></i>
+                            <strong>Applied On:</strong>
+                            <p class="text-muted mb-0">{{ application.created_at|date:"M d, Y" }}</p>
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-clock text-primary me-2"></i>
+                            <strong>Last Updated:</strong>
+                            <p class="text-muted mb-0">{{ application.updated_at|timesince }} ago</p>
+                        </li>
+                        {% if application.status == 'interview' %}
+                        <li>
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Interview Stage</strong>
+                                <p class="mb-0">Check your email for interview details.</p>
+                            </div>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_css %}
+<style>
+    .application-timeline {
+        position: relative;
+        padding: 20px 0;
+    }
+
+    .timeline-item {
+        padding-left: 40px;
+        position: relative;
+        margin-bottom: 30px;
+    }
+
+    .timeline-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .timeline-marker {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid #dee2e6;
+        background: #fff;
+        position: absolute;
+        left: 0;
+        top: 5px;
+    }
+
+    .timeline-item.active .timeline-marker {
+        border-color: #0d6efd;
+        background: #0d6efd;
+    }
+
+    .timeline-item::before {
+        content: '';
+        width: 2px;
+        height: 100%;
+        background: #dee2e6;
+        position: absolute;
+        left: 7px;
+        top: 5px;
+    }
+
+    .timeline-item:last-child::before {
+        display: none;
+    }
+
+    .timeline-item.active::before {
+        background: #0d6efd;
+    }
+</style>
+{% endblock %}
+{% endblock %}

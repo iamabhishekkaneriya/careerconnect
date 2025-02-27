@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - CareerConnect{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        {% if user.profile_photo %}
+                            <img src="{{ user.profile_photo.url }}" alt="Profile Photo" 
+                                 class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                        {% else %}
+                            <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center mb-3"
+                                 style="width: 150px; height: 150px;">
+                                <span class="text-white" style="font-size: 48px;">
+                                    {{ user.get_full_name|default:user.username|make_list|first|upper }}
+                                </span>
+                            </div>
+                        {% endif %}
+                        <h2 class="mb-0">{{ user.get_full_name }}</h2>
+                        <p class="text-muted">{{ user.branch }} - {{ user.get_year_of_study_display }}</p>
+                        <a href="{% url 'accounts:profile_edit' %}" class="btn btn-primary">Edit Profile</a>
+                    </div>
+
+                    <!-- Personal Information -->
+                    <div class="mb-4">
+                        <h4 class="border-bottom pb-2">Personal Information</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Student ID:</strong> {{ user.username }}</p>
+                                <p><strong>Email:</strong> {{ user.email|default:"Not provided" }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Phone:</strong> {{ user.phone_number|default:"Not provided" }}</p>
+                                <p><strong>Branch:</strong> {{ user.branch|default:"Not provided" }}</p>
+                                <p><strong>Year of Study:</strong> {{ user.get_year_of_study_display|default:"Not provided" }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Academic Information -->
+                    <div class="mb-4">
+                        <h4 class="border-bottom pb-2">Academic Information</h4>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p><strong>CGPA:</strong> {{ user.cgpa|default:"Not provided" }}</p>
+                                <p><strong>Skills:</strong> {{ user.skills|default:"Not provided" }}</p>
+                                {% if user.resume %}
+                                <p>
+                                    <strong>Resume:</strong> 
+                                    <a href="{{ user.resume.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        View Resume
+                                    </a>
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Information -->
+                    <div class="mb-4">
+                        <h4 class="border-bottom pb-2">Additional Information</h4>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p><strong>Bio:</strong> {{ profile.bio|default:"Not provided" }}</p>
+                                {% if profile.linkedin_profile %}
+                                <p>
+                                    <strong>LinkedIn:</strong> 
+                                    <a href="{{ profile.linkedin_profile }}" target="_blank">View Profile</a>
+                                </p>
+                                {% endif %}
+                                {% if profile.github_profile %}
+                                <p>
+                                    <strong>GitHub:</strong> 
+                                    <a href="{{ profile.github_profile }}" target="_blank">View Profile</a>
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Projects and Achievements -->
+                    <div class="mb-4">
+                        <h4 class="border-bottom pb-2">Projects and Achievements</h4>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p><strong>Projects:</strong></p>
+                                <div class="mb-3">
+                                    {{ profile.projects|linebreaks|default:"No projects listed" }}
+                                </div>
+                                <p><strong>Certifications:</strong></p>
+                                <div class="mb-3">
+                                    {{ profile.certifications|linebreaks|default:"No certifications listed" }}
+                                </div>
+                                <p><strong>Achievements:</strong></p>
+                                <div>
+                                    {{ profile.achievements|linebreaks|default:"No achievements listed" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

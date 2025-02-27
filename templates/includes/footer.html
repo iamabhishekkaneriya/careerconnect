@@ -1,0 +1,75 @@
+<footer class="footer bg-dark text-light py-4 mt-auto">
+    <div class="container">
+        <div class="row">
+            <!-- Company Info -->
+            <div class="col-lg-4 mb-4 mb-lg-0">
+                <h5 class="mb-3">
+                    <i class="fas fa-briefcase me-2"></i>CareerConnect
+                </h5>
+                <p class="mb-3">Connecting students with their dream careers. Find the perfect job opportunity that matches your skills and aspirations.</p>
+                <div class="social-links">
+                    <a href="#" class="text-light me-3"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-light me-3"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="text-light"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-lg-4 mb-4 mb-lg-0">
+                <h5 class="mb-3">Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <a href="{% url 'home' %}" class="text-light text-decoration-none">
+                            <i class="fas fa-chevron-right me-2"></i>Home
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{% url 'job_list' %}" class="text-light text-decoration-none">
+                            <i class="fas fa-chevron-right me-2"></i>Browse Jobs
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="text-light text-decoration-none">
+                            <i class="fas fa-chevron-right me-2"></i>About Us
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-light text-decoration-none">
+                            <i class="fas fa-chevron-right me-2"></i>Contact
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="col-lg-4">
+                <h5 class="mb-3">Contact Us</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        123 Career Street, Tech City, 12345
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-phone me-2"></i>
+                        +1 234 567 8900
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-envelope me-2"></i>
+                        contact@careerconnect.com
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Copyright -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <hr class="bg-light">
+                <p class="text-center mb-0">
+                    © {% now "Y" %} CareerConnect. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer> 
