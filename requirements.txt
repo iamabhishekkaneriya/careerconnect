@@ -1,0 +1,51 @@
+# Core Django
+Django
+django-crispy-forms
+crispy-bootstrap5
+python-dotenv
+
+# Database
+psycopg2-binary
+
+# Image Processing
+Pillow
+
+# File Handling
+python-magic
+
+# Date and Time
+python-dateutil
+
+# Security
+django-cors-headers
+django-ratelimit
+
+# Development Tools
+django-debug-toolbar
+
+# Export/Import
+openpyxl
+
+# Testing
+pytest
+pytest-django
+
+# Code Quality
+flake8
+black
+
+# Documentation
+Sphinx
+
+# Production
+gunicorn
+whitenoise
+
+# Cache
+redis
+
+# Task Queue
+celery
+
+# Environment Variables
+python-dotenv
