@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Browse Jobs - CareerConnect{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <h1 class="h2 mb-2">Browse Job Opportunities</h1>
+            <p class="text-muted">Find your next career opportunity from our curated list of positions</p>
+        </div>
+        <div class="col-lg-4 d-flex align-items-center justify-content-lg-end mt-3 mt-lg-0">
+            <span class="text-muted">{{ jobs.paginator.count }} jobs found</span>
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="search" class="form-label">Search</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" id="search" name="search" 
+                               placeholder="Job title, company, or keywords" 
+                               value="{{ request.GET.search }}">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="location" class="form-label">Location</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                        <input type="text" class="form-control" id="location" name="location" 
+                               placeholder="City or region" 
+                               value="{{ request.GET.location }}">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="job_type" class="form-label">Job Type</label>
+                    <select class="form-select" id="job_type" name="job_type">
+                        <option value="">All Types</option>
+                        <option value="full_time" {% if request.GET.job_type == 'full_time' %}selected{% endif %}>Full Time</option>
+                        <option value="part_time" {% if request.GET.job_type == 'part_time' %}selected{% endif %}>Part Time</option>
+                        <option value="internship" {% if request.GET.job_type == 'internship' %}selected{% endif %}>Internship</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-filter me-1"></i> Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Job Listings -->
+    <div class="row">
+        <div class="col-12">
+            {% if jobs %}
+                {% for job in jobs %}
+                <div class="card job-card shadow-sm mb-3 border-0">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-lg-1 col-3 mb-3 mb-lg-0">
+                                {% if job.company_logo %}
+                                <img src="{{ job.company_logo.url }}" alt="{{ job.company }}" class="company-logo img-fluid rounded">
+                                {% else %}
+                                <div class="company-logo-placeholder rounded d-flex align-items-center justify-content-center bg-light">
+                                    <span class="h3 text-primary mb-0">{{ job.company|make_list|first|upper }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-lg-5 col-9">
+                                <h5 class="card-title mb-1">{{ job.title }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ job.company }}</h6>
+                                <p class="card-text text-muted mb-2">
+                                    <i class="bi bi-geo-alt me-1"></i>{{ job.location }}
+                                    <span class="mx-2">•</span>
+                                    <i class="bi bi-briefcase me-1"></i>{{ job.get_job_type_display }}
+                                </p>
+                            </div>
+                            <div class="col-lg-4 col-12">
+                                <div class="d-flex align-items-center text-muted small">
+                                    {% if job.salary_range %}
+                                    <span class="me-3">
+                                        <i class="bi bi-currency-dollar me-1"></i>{{ job.salary_range }}
+                                    </span>
+                                    {% endif %}
+                                    <span>
+                                        <i class="bi bi-clock me-1"></i>Posted {{ job.created_at|timesince }} ago
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-12 mt-3 mt-lg-0 text-lg-end">
+                                <a href="{% url 'jobs:job_detail' job.id %}" class="btn btn-primary">View Details</a>
+                              
+                                <a href="{% url 'jobs:job_apply' job.id %}" class="btn btn-success apply-button">Apply Now</a>
+                                
+                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- Pagination -->
+                {% if jobs.has_other_pages %}
+                <nav aria-label="Job listings pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if jobs.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ jobs.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}{% if request.GET.job_type %}&job_type={{ request.GET.job_type }}{% endif %}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% for num in jobs.paginator.page_range %}
+                            {% if jobs.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}{% if request.GET.job_type %}&job_type={{ request.GET.job_type }}{% endif %}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if jobs.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ jobs.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}{% if request.GET.job_type %}&job_type={{ request.GET.job_type }}{% endif %}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <div class="display-1 text-muted mb-4">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <h3 class="h4 text-muted mb-3">No jobs found</h3>
+                    <p class="text-muted mb-4">Try adjusting your search criteria or check back later for new opportunities.</p>
+                    <a href="{% url 'jobs:job_list' %}" class="btn btn-primary">Clear Filters</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.job-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.job-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+}
+
+.company-logo {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+}
+
+.company-logo-placeholder {
+    width: 64px;
+    height: 64px;
+    background-color: #f8f9fa;
+    color: #0d6efd;
+}
+
+.page-link {
+    color: #0d6efd;
+    border-color: #dee2e6;
+}
+
+.page-link:hover {
+    color: #0a58ca;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
+.page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+</style>
+{% endblock %}
